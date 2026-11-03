@@ -1,0 +1,38 @@
+{
+  "name": "@line-harness/openchat-connector",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "Owned OpenChat account connector for L Harness Cloud and OSS",
+  "scripts": {
+    "test": "node --test *.test.mjs bridge.test.cjs",
+    "build": "node --check connector.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "qrcode": "1.5.4"
+  },
+  "files": [
+    "connector.mjs",
+    "login.mjs",
+    "bridge.cjs",
+    "vendor",
+    "scripts",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@noble/ciphers": "2.2.0",
+    "crypto-js": "4.2.0",
+    "curve25519-js": "0.0.4",
+    "esbuild": "0.28.2",
+    "node-bignumber": "1.2.2",
+    "node-int64": "0.4.0",
+    "opusscript": "0.1.1",
+    "thrift": "0.20.0",
+    "tweetnacl": "1.0.3",
+    "undici": "7.16.0"
+  }
+}

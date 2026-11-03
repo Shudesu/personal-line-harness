@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Personal LINE Harness — 接続</title><link rel="stylesheet" href="/style.css"><script src="/setup.js" defer></script></head>
+<body><main><header><span>Personal LINE Harness · Preview</span><h1>個人LINEを、いつものAIから。</h1><p>まず自分のLINEを接続します。連携する会話の選択と日々の操作はMCPから行えます。</p></header>
+<section><h2>1. 管理画面に接続</h2><label>管理APIキー<input id="key" type="password" autocomplete="off" spellcheck="false"></label><button id="unlock">接続一覧を確認</button><button id="forget">キーを消して終了</button><p class="note">キーはこの画面のメモリだけで保持します。AIとの会話に貼り付けないでください。</p></section>
+<section><h2>2. LINEを認証</h2><label>保存済み接続<select id="connections"><option value="">接続一覧を確認してください</option></select></label><button id="refresh">状態を確認</button><details><summary>新しい接続を準備</summary><label>接続名<input id="name" maxlength="100" value="自分のLINE"></label><button id="prepare">接続を保存</button></details>
+<p>この接続はLINE公式の個人向けAPIではありません。iPad方式でログインするため、別のiPadのログインに影響する場合があります。</p><label class="check"><input id="consent" type="checkbox">自分のアカウントの接続を開始します。保存済みの連携対象があれば同期を再開することを確認しました。</label><button id="start">接続を開始・再開</button><button id="login">QR認証を始める</button>
+<div id="auth" hidden><img id="qr" alt="自分のLINEアプリで読み取る認証QR"><p id="pin"></p><p>自分の端末で確認してください。QRや番号を第三者へ共有しないでください。</p></div><pre id="status" role="status" aria-live="polite">未確認</pre></section>
+<section><h2>3. AIから会話を選ぶ</h2><p>「個人LINEの接続状態を確認して」「連携候補の会話を表示して」と伝えてください。本文の保存は選んだ会話だけで始まり、過去履歴を一括取得しません。</p><p>送信するときは、宛先と文面を確認して承認してください。初期状態では自動返信を開始しません。</p></section><p id="error" role="alert"></p></main></body></html>

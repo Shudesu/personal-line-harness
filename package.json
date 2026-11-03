@@ -1,0 +1,35 @@
+{
+  "name": "personal-line-harness",
+  "version": "0.1.0-preview.1",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "Self-hosted personal LINE connection and MCP tools \u2014 experimental preview",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "build:mcp": "node scripts/build-mcp.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run && node --test packages/openchat-connector/*.test.mjs packages/openchat-connector/bridge.test.cjs packages/openchat-connector/managed/server.test.mjs",
+    "test:protocol": "node scripts/mcp-smoke.mjs",
+    "check": "npm run typecheck && npm test && npm run build:mcp && npm run test:protocol",
+    "dev": "wrangler dev --config apps/worker/wrangler.jsonc",
+    "dry-run:worker": "wrangler deploy --dry-run --config apps/worker/wrangler.jsonc",
+    "dry-run:manager": "wrangler deploy --dry-run --config apps/openchat-manager/wrangler.worker.jsonc"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.28.0",
+    "zod": "3.25.76",
+    "hono": "4.12.8",
+    "qrcode": "1.5.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260317.1",
+    "@types/node": "22.19.15",
+    "typescript": "5.9.3",
+    "vitest": "2.1.9",
+    "esbuild": "0.25.12",
+    "wrangler": "4.77.0"
+  }
+}

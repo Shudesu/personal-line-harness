@@ -1,0 +1,5 @@
+Source: https://github.com/evex-dev/linejs
+Commit: 4fc512ab8c19a2490ca73bb71777beb775ca3ae3
+Bundler: esbuild 0.28.2
+SHA256: bc57a4c17a49ca7718c8c47ecf68cbcebbdc4bcfc484379c7cc02c91d8efe886
+Rebuild: scripts/fetch-runtime-source.py then scripts/build-runtime.cjs

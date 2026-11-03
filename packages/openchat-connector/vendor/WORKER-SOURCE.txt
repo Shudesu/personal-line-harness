@@ -1,0 +1,6 @@
+Source: https://github.com/evex-dev/linejs
+Commit: 4fc512ab8c19a2490ca73bb71777beb775ca3ae3
+SHA256: c400fa1ddf483e11da160f8bf37eeef4d223e8f077951d81318f0f390b058154
+Rebuild: scripts/build-worker-runtime.cjs source-vfs.json [dependency-package.json]
+Worker adaptations: native fetch; memory-only storage exports; protocol-only Thrift; cancellable timeouts owned by alarm adapter.
+License: LINEJS-LICENSE and THIRD-PARTY-NOTICES.txt apply.

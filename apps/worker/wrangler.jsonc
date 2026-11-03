@@ -1,0 +1,33 @@
+{
+  "name": "personal-line-harness",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-03-17",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "personal-line-harness",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "personal-line-harness-media"
+    }
+  ],
+  "vars": {
+    "OPENCHAT_TENANT_ID": "personal",
+    "OPENCHAT_MANAGED_URL": "https://REPLACE-WITH-MANAGER-ORIGIN.example",
+    "OPENCHAT_AUTOMATION_ENABLED": "false"
+  }
+}
