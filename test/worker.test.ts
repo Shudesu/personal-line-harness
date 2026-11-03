@@ -8,7 +8,7 @@ const dbs: InstanceType<typeof DatabaseSync>[] = [];
 afterEach(() => { for (const db of dbs.splice(0)) db.close(); });
 function fixture() {
   const sql = new DatabaseSync(':memory:'); dbs.push(sql);
-  for (const name of ['0001_conversations.sql', '0002_managed.sql', '0003_automation.sql']) sql.exec(readFileSync('apps/worker/migrations/' + name, 'utf8'));
+  for (const name of ['0001_conversations.sql', '0002_managed.sql', '0003_automation.sql', '0004_personal_line_consents.sql']) sql.exec(readFileSync('apps/worker/migrations/' + name, 'utf8'));
   const db = { prepare(query: string) { let args: any[] = []; const stmt = { bind(...values: any[]) { args = values; return stmt; }, async first() { return sql.prepare(query).get(...args) ?? null; }, async all() { return { results: sql.prepare(query).all(...args) }; }, async run() { const r = sql.prepare(query).run(...args); return { meta: { changes: Number(r.changes) } }; } }; return stmt; }, async batch(statements: any[]) { sql.exec('BEGIN'); try { const out = []; for (const s of statements) out.push(await s.run()); sql.exec('COMMIT'); return out; } catch (e) { sql.exec('ROLLBACK'); throw e; } } };
   const env: any = { ADMIN_API_KEY: key, DB: db, OPENCHAT_AUTOMATION_ENABLED: 'false' };
   const call = (path: string, method = 'GET', body?: unknown, headers: Record<string, string> = {}) => app.request('https://personal.example' + path, { method, headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json', ...headers }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }, env);
@@ -51,4 +51,19 @@ test('asset responses keep security headers and fetch the index without a canoni
   x.env.ASSETS = { async fetch(request: Request) { assetPath = new URL(request.url).pathname; return new Response('setup', { headers: { 'Cache-Control': 'public', 'Content-Type': 'text/html' } }); } };
   const r = await x.call('/console/personal'); expect(r.status).toBe(200); expect(assetPath).toBe('/');
   expect(r.headers.get('Cache-Control')).toBe('no-store'); expect(r.headers.get('Content-Security-Policy')).toContain("frame-ancestors 'none'"); expect(r.headers.get('Referrer-Policy')).toBe('no-referrer');
+});
+
+test('connection creation and QR login require explicit current notice acceptance', async () => {
+ const x = fixture();
+ for (const path of ['/api/openchat/managed/connectors', '/api/openchat/managed/connectors/fixture/start', '/api/openchat/managed/connectors/fixture/login']) {
+  const response = await x.call(path, 'POST', {name:'Fixture'}); expect(response.status).toBe(409); expect(await response.json()).toHaveProperty('code','personal_line_notice_required');
+ }
+ const notice: any = await (await x.call('/api/personal-line/notice')).json(); expect(notice.data.accepted).toBe(false);
+ expect((await x.call('/api/personal-line/consent', 'POST', {version:'old',accepted:true})).status).toBe(400);
+ expect((await x.call('/api/personal-line/consent', 'POST', {version:notice.data.version,accepted:false})).status).toBe(400);
+ expect((await x.call('/api/personal-line/consent', 'POST', {version:notice.data.version,accepted:true})).status).toBe(200);
+ expect((await (await x.call('/api/personal-line/notice')).json() as any).data.accepted).toBe(true);
+ await x.call('/api/personal-line/consent','POST',{version:notice.data.version,accepted:true});
+ expect(x.sql.prepare('SELECT count(*) n FROM personal_line_consents').get()?.n).toBe(1);
+ const result: any = await (await x.call('/api/openchat/managed/connectors', 'POST', {name:'Fixture'})).json(); expect(result.code).not.toBe('personal_line_notice_required');
 });

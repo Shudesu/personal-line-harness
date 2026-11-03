@@ -44,7 +44,7 @@ node scripts/configure.mjs \
   --bucket personal-line-harness-media
 ```
 
-4. 空の専用DBに、このリポジトリの3つのmigrationだけを適用します。
+4. 空の専用DBに、このリポジトリの4つのmigrationだけを適用します。
 
 ```sh
 npx wrangler d1 migrations apply personal-line-harness --remote --config apps/worker/wrangler.jsonc
@@ -63,7 +63,7 @@ npx wrangler deploy --config apps/worker/wrangler.jsonc
 
 Worker・DB・R2の名前を変更する場合は各wrangler設定も揃えてください。既存サービスを更新するときは暗号鍵を再生成しないでください。鍵の変更により既存認証情報を復元できなくなります。
 
-6. API Workerの `/console/personal` を開き、自分の管理APIキーで接続一覧を確認します。接続を保存→注意事項の確認→開始→QR認証の順に進め、自分のスマートフォンで確認します。
+6. API Workerの `/console/personal` を開き、自分の管理APIキーで接続一覧を確認します。注意事項と責任範囲の確認→接続を保存→開始→QR認証の順に進め、自分のスマートフォンで確認します。
 
 管理APIキーは `.local/api-secrets.json` の `ADMIN_API_KEY` です。秘密ファイル・QR・PINをGitやAIとの会話に貼り付けないでください。画面はAPIキーを永続保存しません。
 
@@ -115,3 +115,9 @@ MCPクライアントにstdioサーバーを登録します。設定キーの形
 ## ライセンス
 
 MIT。既存LINE Harnessの個人LINE実装から必要部分を抽出しています。非公開の運用記録・本番設定・顧客データ・Git履歴は含めません。LINEJSの固定ソースと同梱依存のライセンス・帰属は `packages/openchat-connector/vendor/` を参照してください。[SOURCE.md](SOURCE.md) に由来を記載しています。
+
+## 注意事項と責任範囲の表示
+
+接続画面に、非公式接続、既存iPadログインへの影響、メッセージの不達・遅延、アカウント利用制限・停止の可能性と、保存対象・停止時の履歴保持を表示します。管理者が現在版を明示確認するまで、接続の作成・開始・QR認証をAPI側でも拒否します。閲覧、既存接続の同期、停止操作は妨げません。確認日時・版・本文ハッシュを専用DBに記録します。
+
+接続継続、配信成功、LINE側の利用制限の回避や解除は保証しません。提供者の責めに帰すことのできない事由による損害については責任を負わず、提供者に原因がある場合は適用される規約・ライセンスおよび法令に従います。MITライセンスの免責も、法令上免除・制限できない責任を排除するものではありません。第三者が本ソフトウェアをホストする場合、その運用者自身の提供条件と連絡先を利用者に提示してください。

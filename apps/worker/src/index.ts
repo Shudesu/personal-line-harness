@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { personalNotice } from './routes/personal-line-notice.js';
 import { openchat } from './routes/openchat.js';
 import { managedOpenchat } from './routes/openchat-managed.js';
 import { openchatAutomation } from './routes/openchat-automation.js';
@@ -35,6 +36,7 @@ app.use('/api/*', async (c, next) => {
   await next();
 });
 // Connector callbacks verify their own scoped tokens inside the existing routes.
+app.route('/', personalNotice);
 app.route('/', managedOpenchat);
 app.route('/', openchatAutomation);
 app.route('/', openchat);

@@ -3,6 +3,17 @@ let key = '';
 let timer;
 let deadline = 0;
 let epoch = 0;
+let noticeVersion = '';
+let noticeAccepted = false;
+const applyNoticeGate = () => { for (const id of ['prepare','start','login']) byId(id).disabled = !noticeAccepted; };
+applyNoticeGate();
+async function readNotice() {
+ const data = await api('/api/personal-line/notice'); noticeVersion = data.version; noticeAccepted = data.accepted === true;
+ byId('notice-title').textContent = data.title; byId('notice-text').replaceChildren();
+ for (const section of data.sections) { const h = document.createElement('h3'); h.textContent = section.title; const paragraph = document.createElement('p'); paragraph.textContent = section.text; byId('notice-text').append(h, paragraph); }
+ byId('notice-acknowledgement').textContent = data.acknowledgement; byId('notice-state').textContent = data.accepted ? '確認済みです。' : '接続前に内容を確認してください。';
+ byId('notice-section').hidden = false; byId('accept-notice').hidden = data.accepted; byId('notice-agree').checked = false;
+}
 const clearAuth = () => { byId('auth').hidden = true; byId('qr').removeAttribute('src'); byId('pin').textContent = ''; };
 const stop = () => { clearTimeout(timer); deadline = 0; };
 async function api(path, method = 'GET', body) {
@@ -43,10 +54,11 @@ function watch() {
 }
 const act = (id, fn) => byId(id).addEventListener('click', async () => {
   const buttons = [...document.querySelectorAll('button')]; buttons.forEach(b => b.disabled = true); byId('error').textContent = '';
-  try { await fn(); } catch (error) { stop(); byId('error').textContent = error.message; } finally { buttons.forEach(b => b.disabled = false); }
+  try { await fn(); } catch (error) { stop(); byId('error').textContent = error.message; } finally { buttons.forEach(b => b.disabled = false); applyNoticeGate(); }
 });
-act('unlock', async () => { stop(); epoch++; clearAuth(); key = byId('key').value.trim(); byId('key').value = ''; await connections(); });
-act('forget', async () => { stop(); epoch++; key = ''; byId('key').value = ''; byId('connections').replaceChildren(); clearAuth(); byId('status').textContent = '終了しました。LINE接続自体は継続します。'; });
+act('unlock', async () => { stop(); epoch++; clearAuth(); key = byId('key').value.trim(); byId('key').value = ''; await readNotice(); await connections(); });
+act('forget', async () => { stop(); epoch++; key = ''; byId('key').value = ''; byId('connections').replaceChildren(); clearAuth(); byId('notice-section').hidden = true; noticeVersion = ''; noticeAccepted = false; byId('status').textContent = '終了しました。LINE接続自体は継続します。'; });
+act('accept-notice', async () => { if (!byId('notice-agree').checked || !noticeVersion) throw Error('注意事項を確認してチェックしてください。'); await api('/api/personal-line/consent', 'POST', { version: noticeVersion, accepted: true }); await readNotice(); });
 act('prepare', async () => { const data = await api('/api/openchat/managed/connectors', 'POST', { name: byId('name').value }); await connections(data.id); byId('status').textContent = '保存しました。注意事項を確認して接続を開始してください。'; });
 act('refresh', status);
 for (const action of ['start', 'login']) act(action, async () => {
